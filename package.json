@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Karamvir-Bains/tinyapp/issues"
   },
-  "homepage": "https://github.com/Karamvir-Bains/tinyapp#readme"
+  "homepage": "https://github.com/Karamvir-Bains/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
