@@ -50,10 +50,22 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 });
 
+app.post("/urls/:id/update", (req, res) => {
+  const shortURL = req.url.split("/")[2];
+  const newLongURL = req.body.longURL;
+  urlDatabase[shortURL] = newLongURL;
+  res.redirect(`/urls`);
+});
+
 app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.url.split("/")[2];
   delete urlDatabase[shortURL];
   res.redirect("/urls");
+});
+
+app.post("/urls/:id/edit", (req, res) => {
+  const shortURL = req.url.split("/")[2];
+  res.redirect(`/urls/${shortURL}`);
 });
 
 app.listen(PORT, () => {

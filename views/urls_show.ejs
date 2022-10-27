@@ -20,6 +20,23 @@
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
+        <form method="POST" action=<%= `/urls/${id}/update` %>></form>
+        
+      </div>
+      <div class="card text-center bg-light">
+        <h3 class="mt-2">Edit</h3>
+        <form action=<%= `/urls/${id}/update` %> method="POST">
+          <div class="form-group mb-2">
+            <label for="longURL">New URL:</label>
+            <input
+              type="text"
+              name="longURL"
+              value=<%= `${longURL}`%>
+              style="width: 300px; margin: 1em"
+            />
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
       </div>
       <div class="card-footer text-muted"></div>
     </div>
