@@ -120,6 +120,9 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
+  if (email === "") return res.send("Empty Field Input Email: 404");
+  if (password === "") return res.send("Empty Field Input Password: 404");
+  if (userLookUp(email)) return res.send("User Already Exists: 404");
   users[id] = {
     id: id,
     email: email,
@@ -135,4 +138,14 @@ app.listen(PORT, () => {
 
 const generateRandomString = function() {
   return Math.random().toString(36).slice(2, 8);
+};
+
+const userLookUp = function(email) {
+  const userArray = Object.values(users);
+  for (const user of userArray) {
+    if (user["email"] === email) {
+      return user;
+    }
+  }
+  return null;
 };
