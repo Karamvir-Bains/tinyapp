@@ -59,16 +59,6 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-app.get("/register", (req, res) => {
-  const userId = req.cookies["user_id"];
-  const templateVars = {
-    urls: urlDatabase,
-    users,
-    userId,
-  };
-  res.render("urls_register", templateVars);
-});
-
 app.get("/urls/:id", (req, res) => {
   const userId = req.cookies["user_id"];
   const templateVars = {
@@ -77,14 +67,7 @@ app.get("/urls/:id", (req, res) => {
     users,
     userId,
   };
-  console.log(templateVars);
   res.render("urls_show", templateVars);
-});
-
-app.get("/u/:id", (req, res) => {
-  const shortURL = req.url.split("/")[2];
-  const longURL = urlDatabase[shortURL];
-  res.redirect(longURL);
 });
 
 app.post("/urls/:id/update", (req, res) => {
@@ -105,28 +88,20 @@ app.post("/urls/:id/edit", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-app.get("/login", (req, res) => {
+app.get("/u/:id", (req, res) => {
+  const shortURL = req.url.split("/")[2];
+  const longURL = urlDatabase[shortURL];
+  res.redirect(longURL);
+});
+
+app.get("/register", (req, res) => {
   const userId = req.cookies["user_id"];
   const templateVars = {
     urls: urlDatabase,
     users,
     userId,
   };
-  res.render("urls_login", templateVars);
-});
-
-app.post("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const user = userLookUp(email);
-  if (user === null) return res.send("Email Not Found: 403");
-  if (user.password !== password) return res.send("Wrong Password: 403");
-  res.redirect("/urls");
-});
-
-app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
-  res.redirect("/login");
+  res.render("urls_register", templateVars);
 });
 
 app.post("/register", (req, res) => {
@@ -143,6 +118,31 @@ app.post("/register", (req, res) => {
   };
   res.cookie("user_id", id);
   res.redirect("/urls");
+});
+
+app.get("/login", (req, res) => {
+  const userId = req.cookies["user_id"];
+  const templateVars = {
+    urls: urlDatabase,
+    users,
+    userId,
+  };
+  res.render("urls_login", templateVars);
+});
+
+app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const user = userLookUp(email);
+  if (user === null) return res.send("Email Not Found: 403");
+  if (user.password !== password) return res.send("Wrong Password: 403");
+  res.cookie("user_id", user.id);
+  res.redirect("/urls");
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("user_id");
+  res.redirect("/login");
 });
 
 app.listen(PORT, () => {
