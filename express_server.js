@@ -119,9 +119,8 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const user = userLookUp(email);
-  if (user.password === password) {
-    res.cookie("user_id", user.id);
-  }
+  if (user === null) return res.send("Email Not Found: 403");
+  if (user.password !== password) return res.send("Wrong Password: 403");
   res.redirect("/urls");
 });
 
