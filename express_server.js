@@ -152,7 +152,11 @@ app.get("/login", (req, res) => {
     users,
     userId,
   };
-  res.render("urls_login", templateVars);
+  if (userId !== undefined) {
+    res.redirect("/urls");
+  } else {
+    res.render("urls_login", templateVars);
+  }
 });
 
 app.post("/login", (req, res) => {
