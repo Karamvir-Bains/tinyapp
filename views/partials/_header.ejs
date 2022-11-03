@@ -13,26 +13,22 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
+      <div class="navbar-nav mr-auto">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
-    </div>
-    <div>
-      <% if (users[userId] !== undefined) {%>
-        <div class="form-inline mb-2">
-          <label class="mr-2"><%= `Logged in as: ${users[userId].email}!` %></label>
-          <form method="POST" action="/logout">
-            <button class="btn btn-outline-dark">Logout</button>
-          </form>
-        </div>
-      <% } else { %>
-        <form method="POST" action="/login">
-          <div class="form-inline mb-2">
-            <input class="form-control mr-2" type="text" name="username" placeholder="Username" style="width: 200px;">
-            <button class="btn btn-outline-dark" type="submit"> Submit</button>
-          </div>
+    <% if (users[userId] !== undefined) {%>
+      <div class="form-inline mb-2">
+        <label class="mr-2"><%= `Logged in as: ${users[userId].email}!` %></label>
+        <form method="POST" action="/logout">
+          <button class="btn btn-outline-dark">Logout</button>
         </form>
-      <% } %>
+      </div>
+    <% } else { %>
+      <div class="navbar-nav">
+        <a class="nav-item nav-link" href="/login">Login</a>
+        <a class="nav-item nav-link" href="/register">Register</a>
+      </div>
+    <% } %>
     </div>
   </nav>
