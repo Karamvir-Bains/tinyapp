@@ -126,7 +126,11 @@ app.get("/register", (req, res) => {
     users,
     userId,
   };
-  res.render("urls_register", templateVars);
+  if (userId !== undefined) {
+    res.redirect("/urls");
+  } else {
+    res.render("urls_register", templateVars);
+  }
 });
 
 app.post("/register", (req, res) => {
