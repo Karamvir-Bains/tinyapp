@@ -1,9 +1,9 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const app = express();
-const PORT = 8080; // default port 8080
 
-app.set("view engine", "ejs");
+///////////////////////////////////////////////////////////////////
+// Data
+///////////////////////////////////////////////////////////////////
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -18,8 +18,33 @@ const users = {
   }
 };
 
+///////////////////////////////////////////////////////////////////
+// Set-Up / Configuration
+///////////////////////////////////////////////////////////////////
+
+const app = express();
+const PORT = 8080;
+
+app.set("view engine", "ejs");
+
+///////////////////////////////////////////////////////////////////
+// Middleware
+///////////////////////////////////////////////////////////////////
+
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+///////////////////////////////////////////////////////////////////
+// Listener
+///////////////////////////////////////////////////////////////////
+
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
+
+///////////////////////////////////////////////////////////////////
+// Routes
+///////////////////////////////////////////////////////////////////
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -77,15 +102,15 @@ app.post("/urls/:id/update", (req, res) => {
   res.redirect(`/urls`);
 });
 
+app.post("/urls/:id/edit", (req, res) => {
+  const shortURL = req.url.split("/")[2];
+  res.redirect(`/urls/${shortURL}`);
+});
+
 app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.url.split("/")[2];
   delete urlDatabase[shortURL];
   res.redirect("/urls");
-});
-
-app.post("/urls/:id/edit", (req, res) => {
-  const shortURL = req.url.split("/")[2];
-  res.redirect(`/urls/${shortURL}`);
 });
 
 app.get("/u/:id", (req, res) => {
@@ -145,9 +170,9 @@ app.post("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
+///////////////////////////////////////////////////////////////////
+// Functions
+///////////////////////////////////////////////////////////////////
 
 const generateRandomString = function() {
   return Math.random().toString(36).slice(2, 8);
