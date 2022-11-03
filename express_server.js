@@ -81,7 +81,11 @@ app.get("/urls/new", (req, res) => {
     users,
     userId,
   };
-  res.render("urls_new", templateVars);
+  if (userId === undefined) {
+    res.redirect("/login");
+  } else {
+    res.render("urls_new", templateVars);
+  }
 });
 
 app.get("/urls/:id", (req, res) => {
