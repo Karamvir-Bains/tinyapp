@@ -227,3 +227,14 @@ const shortUrlExists = function(shortUrl) {
   }
   return false;
 };
+
+const urlsForUser = function(id) {
+  const values = Object.values(urlDatabase);
+  let urls = [];
+  values.map(obj => {
+    if (obj.userID === id) {
+      urls.push(obj.longURL);
+    }
+  });
+  return urls;
+};
