@@ -69,10 +69,15 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const longURL = req.body.longURL;
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL;
-  res.redirect(`/urls/${shortURL}`);
+  const userId = req.cookies["user_id"];
+  if (userId === undefined) {
+    res.send("Login To Create Short Url");
+  } else {
+    const longURL = req.body.longURL;
+    const shortURL = generateRandomString();
+    urlDatabase[shortURL] = longURL;
+    res.redirect(`/urls/${shortURL}`);
+  }
 });
 
 app.get("/urls/new", (req, res) => {
