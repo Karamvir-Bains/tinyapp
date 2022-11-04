@@ -108,13 +108,17 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   const userID = req.cookies["user_id"];
-  const templateVars = {
-    id: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
-    users,
-    userID,
-  };
-  res.render("urls_show", templateVars);
+  if (userID === undefined) {
+    res.send("Login To View Url");
+  } else {
+    const templateVars = {
+      id: req.params.id,
+      longURL: urlDatabase[req.params.id].longURL,
+      users,
+      userID,
+    };
+    res.render("urls_show", templateVars);
+  }
 });
 
 app.post("/urls/:id/update", (req, res) => {
