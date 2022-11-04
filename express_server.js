@@ -14,6 +14,10 @@ const urlDatabase = {
     longURL: "http://www.google.com",
     userID: "aJ48lW",
   },
+  "ojx23l": {
+    longURL: "https://www.youtube.com/",
+    userID: "abc123",
+  },
 };
 
 const users = {
@@ -21,7 +25,12 @@ const users = {
     id: "abc123",
     email: "example@gmail.com",
     password: "123",
-  }
+  },
+  "aJ48lW": {
+    id: "aJ48lW",
+    email: "example1@gmail.com",
+    password: "123",
+  },
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -110,14 +119,20 @@ app.get("/urls/:id", (req, res) => {
   const userID = req.cookies["user_id"];
   if (userID === undefined) {
     res.send("Login To View Url");
-  } else {
+  }
+  const shortURL = req.params.id;
+  const longURL = urlDatabase[req.params.id].longURL;
+  const userURLs = urlsForUser(userID);
+  if (userURLs[shortURL]) {
     const templateVars = {
-      id: req.params.id,
-      longURL: urlDatabase[req.params.id].longURL,
+      id: shortURL,
+      longURL: longURL,
       users,
       userID,
     };
     res.render("urls_show", templateVars);
+  } else {
+    res.send("You Do Not Own The Url");
   }
 });
 
@@ -233,12 +248,11 @@ const shortUrlExists = function(shortUrl) {
 };
 
 const urlsForUser = function(id) {
-  const values = Object.values(urlDatabase);
-  let urls = [];
-  values.map(obj => {
-    if (obj.userID === id) {
-      urls.push(obj.longURL);
+  let userURLs = {};
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === id) {
+      userURLs[shortURL] = urlDatabase[shortURL];
     }
-  });
-  return urls;
+  }
+  return userURLs;
 };
