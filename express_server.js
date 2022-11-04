@@ -125,6 +125,7 @@ app.post("/urls/:id/delete", (req, res) => {
 app.get("/u/:id", (req, res) => {
   const shortURL = req.url.split("/")[2];
   const longURL = urlDatabase[shortURL];
+  if (!shortUrlExists(shortURL)) return res.send("Url Does Not Exist");
   res.redirect(longURL);
 });
 
@@ -203,4 +204,13 @@ const userLookUp = function(email) {
     }
   }
   return null;
+};
+
+const shortUrlExists = function(shortUrl) {
+  for (const key in urlDatabase) {
+    if (key === shortUrl) {
+      return true;
+    }
+  }
+  return false;
 };
