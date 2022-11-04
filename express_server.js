@@ -117,11 +117,10 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   const userID = req.cookies["user_id"];
-  if (userID === undefined) {
-    res.send("Login To View Url");
-  }
-  const shortURL = req.params.id;
-  const longURL = urlDatabase[req.params.id].longURL;
+  const shortURL = req.url.split("/")[2];
+  if (!shortUrlExists(shortURL)) return res.send("URL Does Not Exist");
+  if (userID === undefined) return res.send("Login To View Url");
+  const longURL = urlDatabase[shortURL].longURL;
   const userURLs = urlsForUser(userID);
   if (userURLs[shortURL]) {
     const templateVars = {
@@ -138,11 +137,17 @@ app.get("/urls/:id", (req, res) => {
 
 app.post("/urls/:id/update", (req, res) => {
   const userID = req.cookies["user_id"];
-  if (userID === undefined) return res.send("Login To Update URL");
   const shortURL = req.url.split("/")[2];
-  const newLongURL = req.body.longURL;
-  urlDatabase[shortURL].longURL = newLongURL;
-  res.redirect(`/urls`);
+  if (!shortUrlExists(shortURL)) return res.send("URL Does Not Exist");
+  if (userID === undefined) return res.send("Login To Update URL");
+  const userURLs = urlsForUser(userID);
+  if (userURLs[shortURL].userID === userID) {
+    const newLongURL = req.body.longURL;
+    urlDatabase[shortURL].longURL = newLongURL;
+    res.redirect(`/urls`);
+  } else {
+    res.send("Can't Edit URLs You Don't Own");
+  }
 });
 
 app.post("/urls/:id/edit", (req, res) => {
@@ -152,10 +157,16 @@ app.post("/urls/:id/edit", (req, res) => {
 
 app.post("/urls/:id/delete", (req, res) => {
   const userID = req.cookies["user_id"];
-  if (userID === undefined) return res.send("Login To Delete URL");
   const shortURL = req.url.split("/")[2];
-  delete urlDatabase[shortURL];
-  res.redirect("/urls");
+  if (!shortUrlExists(shortURL)) return res.send("URL Does Not Exist");
+  if (userID === undefined) return res.send("Login To Delete URL");
+  const userURLs = urlsForUser(userID);
+  if (userURLs[shortURL].userID === userID) {
+    delete urlDatabase[shortURL];
+    res.redirect("/urls");
+  } else {
+    res.send("Can't Delete URLs You Don't Own");
+  }
 });
 
 app.get("/u/:id", (req, res) => {
