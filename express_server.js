@@ -137,6 +137,8 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id/update", (req, res) => {
+  const userID = req.cookies["user_id"];
+  if (userID === undefined) return res.send("Login To Update URL");
   const shortURL = req.url.split("/")[2];
   const newLongURL = req.body.longURL;
   urlDatabase[shortURL].longURL = newLongURL;
@@ -149,6 +151,8 @@ app.post("/urls/:id/edit", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
+  const userID = req.cookies["user_id"];
+  if (userID === undefined) return res.send("Login To Delete URL");
   const shortURL = req.url.split("/")[2];
   delete urlDatabase[shortURL];
   res.redirect("/urls");
