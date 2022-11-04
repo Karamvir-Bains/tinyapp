@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const bcrypt = require("bcryptjs");
 
 ///////////////////////////////////////////////////////////////////
 // Data
@@ -24,12 +25,12 @@ const users = {
   "abc123": {
     id: "abc123",
     email: "example@gmail.com",
-    password: "123",
+    password: "$2a$10$88eZVuGIamCusxt1qDjVzuv6aNDAeAIU1rzc/kEpKIP0HBJ.h1cwa",
   },
   "aJ48lW": {
     id: "aJ48lW",
     email: "example1@gmail.com",
-    password: "123",
+    password: "$2a$10$Z6EFryOHMMtUwhq6GYyinOtWWooA1BlQQVD8J74hSO1KsTX9v9Pli",
   },
 };
 
@@ -194,13 +195,14 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
   if (email === "") return res.send("Empty Field Input Email: 404");
   if (password === "") return res.send("Empty Field Input Password: 404");
   if (userLookUp(email)) return res.send("User Already Exists: 404");
   users[id] = {
     id: id,
     email: email,
-    password: password,
+    password: hashedPassword,
   };
   res.cookie("user_id", id);
   res.redirect("/urls");
@@ -225,9 +227,12 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
   const user = userLookUp(email);
   if (user === null) return res.send("Email Not Found: 403");
-  if (user.password !== password) return res.send("Wrong Password: 403");
-  res.cookie("user_id", user.id);
-  res.redirect("/urls");
+  if (bcrypt.compareSync(password, user.password)) {
+    res.cookie("user_id", user.id);
+    res.redirect("/urls");
+  } else {
+    res.send("Wrong Password: 403");
+  }
 });
 
 app.post("/logout", (req, res) => {
