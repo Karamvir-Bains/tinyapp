@@ -66,12 +66,16 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const userID = req.cookies["user_id"];
-  const templateVars = {
-    urls: urlDatabase,
-    users,
-    userID,
-  };
-  res.render("urls_index", templateVars);
+  if (userID === undefined) {
+    res.send("Login To View Urls");
+  } else {
+    const templateVars = {
+      urls: urlDatabase,
+      users,
+      userID,
+    };
+    res.render("urls_index", templateVars);
+  }
 });
 
 app.post("/urls", (req, res) => {
