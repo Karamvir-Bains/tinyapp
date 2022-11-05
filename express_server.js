@@ -14,14 +14,14 @@ const urlDatabase = {
     userID: "aJ48lW",
     views: 0,
     uniqueViews: 0,
-    viistHistory: [],
+    visitHistory: [],
   },
   "9sm5xK": {
     longURL: "http://www.google.com",
     userID: "aJ48lW",
     views: 0,
     uniqueViews: 0,
-    viistHistory: [],
+    visitHistory: [],
   },
   "ojx23l": {
     longURL: "https://www.youtube.com/",
@@ -132,7 +132,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   const userID = req.session.userID;
-  const shortURL = req.url.split("/")[2];
+  const shortURL = req.params.id;
   if (!shortUrlExists(shortURL, urlDatabase)) return res.send("URL Does Not Exist");
   if (userID === undefined) return res.send("Login To View Url");
   const longURL = urlDatabase[shortURL].longURL;
@@ -147,27 +147,27 @@ app.get("/urls/:id", (req, res) => {
     usersDatabase[userID].history.push(shortURL);
   }
   const uniqueViewCount = urlDatabase[shortURL].uniqueViews;
-  if (userURLs[shortURL]) {
-    const templateVars = {
-      id: shortURL,
-      longURL: longURL,
-      usersDatabase,
-      userID,
-      viewCount,
-      uniqueViewCount,
-      visitHistory,
-    };
-    res.render("urls_show", templateVars);
-  } else {
-    res.send("You Do Not Own The Url");
-  }
+  const canEdit = userURLs[shortURL] ? true : false;
+  const templateVars = {
+    id: shortURL,
+    longURL: longURL,
+    usersDatabase,
+    userID,
+    viewCount,
+    uniqueViewCount,
+    visitHistory,
+    canEdit,
+  };
+  res.render("urls_show", templateVars);
 });
 
-app.put("/urls/:id/update", (req, res) => {
+// POST Method
+// Updates longURL if user is owner
+app.put("/urls/:id", (req, res) => {
   const userID = req.session.userID;
-  const shortURL = req.url.split("/")[2];
+  const shortURL = req.params.id;
   if (!shortUrlExists(shortURL, urlDatabase)) return res.send("URL Does Not Exist");
-  if (userID === undefined) return res.send("Login To Update URL");
+  if (userID === undefined) return res.send("Login To Update URL"); // Update this to inclue if the user is actually a valid user
   const userURLs = urlsForUser(userID, urlDatabase);
   if (userURLs[shortURL].userID === userID) {
     const newLongURL = req.body.longURL;
@@ -178,14 +178,9 @@ app.put("/urls/:id/update", (req, res) => {
   }
 });
 
-app.post("/urls/:id/edit", (req, res) => {
-  const shortURL = req.url.split("/")[2];
-  res.redirect(`/urls/${shortURL}`);
-});
-
 app.delete("/urls/:id/delete", (req, res) => {
   const userID = req.session.userID;
-  const shortURL = req.url.split("/")[2];
+  const shortURL = req.params.id;
   if (!shortUrlExists(shortURL, urlDatabase)) return res.send("URL Does Not Exist");
   if (userID === undefined) return res.send("Login To Delete URL");
   const userURLs = urlsForUser(userID, urlDatabase);
@@ -198,7 +193,7 @@ app.delete("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-  const shortURL = req.url.split("/")[2];
+  const shortURL = req.params.id;
   const longURL = urlDatabase[shortURL].longURL;
   if (!shortUrlExists(shortURL, urlDatabase)) return res.send("Url Does Not Exist");
   res.redirect(longURL);

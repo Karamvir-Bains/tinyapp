@@ -22,33 +22,33 @@
         </p>
         <p class="card-text">Total Views: <%= viewCount %></p>
         <p class="card-text">Unique Views: <%= uniqueViewCount %></p>
-        <form method="POST" action=<%= `/urls/${id}/update` %>></form>
-        
       </div>
-      <div class="card text-center bg-light">
-        <h3 class="mt-2">Edit</h3>
-        <form method="POST" action=<%= `/urls/${id}/update?_method=PUT` %>>
-          <div class="form-group mb-2">
-            <label for="longURL">New URL:</label>
-            <input
-              type="text"
-              name="longURL"
-              value=<%= `${longURL}`%>
-              style="width: 300px; margin: 1em"
-            />
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </div>
-        </form>
-      </div>
-      <div>
-        <h3 class="mt-2">Viewer History</h3>
-        <% for (const visit of visitHistory) {%>
-          <div>
-            <p><%= visit.userID %></p>
-            <p><%= visit.timestamp %></p>
-          </div> 
-        <% } %> 
-      </div>
+      <% if (canEdit) {%> 
+        <div class="card text-center bg-light">
+          <h3 class="mt-2">Edit</h3>
+          <form method="POST" action=<%= `/urls/${id}?_method=PUT` %>>
+            <div class="form-group mb-2">
+              <label for="longURL">New URL:</label>
+              <input
+                type="text"
+                name="longURL"
+                value=<%= `${longURL}`%>
+                style="width: 300px; margin: 1em"
+              />
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </form>
+        </div>
+        <div>
+          <h3 class="mt-2">Viewer History</h3>
+          <% for (const visit of visitHistory) {%>
+            <div>
+              <p><%= visit.userID %></p>
+              <p><%= visit.timestamp %></p>
+            </div> 
+          <% } %> 
+        </div>
+      <% } %> 
       <div class="card-footer text-muted"></div>
     </div>
     <!-- Bootstrap JS -->
