@@ -20,7 +20,8 @@
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
-        <p class="card-text">Views: <%= viewCount %></p>
+        <p class="card-text">Total Views: <%= viewCount %></p>
+        <p class="card-text">Unique Views: <%= uniqueViewCount %></p>
         <form method="POST" action=<%= `/urls/${id}/update` %>></form>
         
       </div>

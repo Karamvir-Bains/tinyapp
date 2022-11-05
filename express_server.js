@@ -13,16 +13,19 @@ const urlDatabase = {
     longURL: "http://www.lighthouselabs.ca",
     userID: "aJ48lW",
     views: 0,
+    uniqueViews: 0,
   },
   "9sm5xK": {
     longURL: "http://www.google.com",
     userID: "aJ48lW",
     views: 0,
+    uniqueViews: 0,
   },
   "ojx23l": {
     longURL: "https://www.youtube.com/",
     userID: "abc123",
     views: 0,
+    uniqueViews: 0,
   },
 };
 
@@ -31,11 +34,13 @@ const usersDatabase = {
     id: "abc123",
     email: "example@gmail.com",
     password: "$2a$10$88eZVuGIamCusxt1qDjVzuv6aNDAeAIU1rzc/kEpKIP0HBJ.h1cwa",
+    history: [],
   },
   "aJ48lW": {
     id: "aJ48lW",
     email: "example1@gmail.com",
     password: "$2a$10$Z6EFryOHMMtUwhq6GYyinOtWWooA1BlQQVD8J74hSO1KsTX9v9Pli",
+    history: [],
   },
 };
 
@@ -131,6 +136,11 @@ app.get("/urls/:id", (req, res) => {
   const userURLs = urlsForUser(userID, urlDatabase);
   urlDatabase[shortURL].views += 1;
   const viewCount = urlDatabase[shortURL].views;
+  if (isUniqueViewer(shortURL, userID, usersDatabase)) {
+    urlDatabase[shortURL].uniqueViews += 1;
+    usersDatabase[userID].history.push(shortURL);
+  }
+  const uniqueViewCount = urlDatabase[shortURL].uniqueViews;
   if (userURLs[shortURL]) {
     const templateVars = {
       id: shortURL,
@@ -138,6 +148,7 @@ app.get("/urls/:id", (req, res) => {
       usersDatabase,
       userID,
       viewCount,
+      uniqueViewCount,
     };
     res.render("urls_show", templateVars);
   } else {
@@ -253,3 +264,12 @@ app.post("/logout", (req, res) => {
 ///////////////////////////////////////////////////////////////////
 // Functions
 ///////////////////////////////////////////////////////////////////
+
+const isUniqueViewer = function(shortURL, userID, database) {
+  for (const vist of database[userID].history) {
+    if (shortURL === vist) {
+      return false;
+    }
+  }
+  return true;
+};
