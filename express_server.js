@@ -102,6 +102,8 @@ app.get("/urls", (req, res) => {
   }
 });
 
+// POST Method
+// Adds new shortURL object to url database
 app.post("/urls", (req, res) => {
   const userID = req.session.userID;
   if (userID === undefined) {
@@ -161,7 +163,7 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-// POST Method
+// PUT Method
 // Updates longURL if user is owner
 app.put("/urls/:id", (req, res) => {
   const userID = req.session.userID;
@@ -178,6 +180,8 @@ app.put("/urls/:id", (req, res) => {
   }
 });
 
+// Delete Method
+// Deletes shortURL from url database if user is owner
 app.delete("/urls/:id/delete", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.params.id;
