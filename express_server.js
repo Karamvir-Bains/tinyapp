@@ -1,5 +1,5 @@
 const express = require("express");
-const cookieParser = require("cookie-parser");
+const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 
 ///////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ app.set("view engine", "ejs");
 ///////////////////////////////////////////////////////////////////
 
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieSession({name: 'session', keys: ["u3M1tAyFG2", "2J225oPIny"]}));
 
 ///////////////////////////////////////////////////////////////////
 // Listener
@@ -75,7 +75,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session.userID;
   if (userID === undefined) {
     res.send("Login To View Urls");
   } else {
@@ -89,7 +89,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session.userID;
   if (userID === undefined) {
     res.send("Login To Create Short Url");
   } else {
@@ -104,7 +104,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session.userID;
   const templateVars = {
     users,
     userID,
@@ -117,7 +117,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session.userID;
   const shortURL = req.url.split("/")[2];
   if (!shortUrlExists(shortURL)) return res.send("URL Does Not Exist");
   if (userID === undefined) return res.send("Login To View Url");
@@ -137,7 +137,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id/update", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session.userID;
   const shortURL = req.url.split("/")[2];
   if (!shortUrlExists(shortURL)) return res.send("URL Does Not Exist");
   if (userID === undefined) return res.send("Login To Update URL");
@@ -157,7 +157,7 @@ app.post("/urls/:id/edit", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session.userID;
   const shortURL = req.url.split("/")[2];
   if (!shortUrlExists(shortURL)) return res.send("URL Does Not Exist");
   if (userID === undefined) return res.send("Login To Delete URL");
@@ -178,7 +178,7 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session.userID;
   const templateVars = {
     urls: urlDatabase,
     users,
@@ -204,12 +204,12 @@ app.post("/register", (req, res) => {
     email: email,
     password: hashedPassword,
   };
-  res.cookie("user_id", id);
+  req.session.userID = id;
   res.redirect("/urls");
 });
 
 app.get("/login", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session.userID;
   const templateVars = {
     urls: urlDatabase,
     users,
@@ -228,7 +228,7 @@ app.post("/login", (req, res) => {
   const user = userLookUp(email);
   if (user === null) return res.send("Email Not Found: 403");
   if (bcrypt.compareSync(password, user.password)) {
-    res.cookie("user_id", user.id);
+    req.session.userID = user.id;
     res.redirect("/urls");
   } else {
     res.send("Wrong Password: 403");
@@ -236,7 +236,8 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  res.clearCookie('session');
+  res.clearCookie('session.sig');
   res.redirect("/login");
 });
 
