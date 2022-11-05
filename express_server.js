@@ -1,7 +1,7 @@
 const express = require("express");
 const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
-const { getUserByEmail } = require("./helpers");
+const { getUserByEmail, generateRandomString, shortUrlExists, urlsForUser } = require("./helpers");
 
 ///////////////////////////////////////////////////////////////////
 // Data
@@ -22,7 +22,7 @@ const urlDatabase = {
   },
 };
 
-const users = {
+const usersDatabase = {
   "abc123": {
     id: "abc123",
     email: "example@gmail.com",
@@ -82,7 +82,7 @@ app.get("/urls", (req, res) => {
   } else {
     const templateVars = {
       urls: urlDatabase,
-      users,
+      usersDatabase,
       userID,
     };
     res.render("urls_index", templateVars);
@@ -107,7 +107,7 @@ app.post("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const userID = req.session.userID;
   const templateVars = {
-    users,
+    usersDatabase,
     userID,
   };
   if (userID === undefined) {
@@ -120,15 +120,15 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.url.split("/")[2];
-  if (!shortUrlExists(shortURL)) return res.send("URL Does Not Exist");
+  if (!shortUrlExists(shortURL, urlDatabase)) return res.send("URL Does Not Exist");
   if (userID === undefined) return res.send("Login To View Url");
   const longURL = urlDatabase[shortURL].longURL;
-  const userURLs = urlsForUser(userID);
+  const userURLs = urlsForUser(userID, urlDatabase);
   if (userURLs[shortURL]) {
     const templateVars = {
       id: shortURL,
       longURL: longURL,
-      users,
+      usersDatabase,
       userID,
     };
     res.render("urls_show", templateVars);
@@ -140,9 +140,9 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls/:id/update", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.url.split("/")[2];
-  if (!shortUrlExists(shortURL)) return res.send("URL Does Not Exist");
+  if (!shortUrlExists(shortURL, urlDatabase)) return res.send("URL Does Not Exist");
   if (userID === undefined) return res.send("Login To Update URL");
-  const userURLs = urlsForUser(userID);
+  const userURLs = urlsForUser(userID, urlDatabase);
   if (userURLs[shortURL].userID === userID) {
     const newLongURL = req.body.longURL;
     urlDatabase[shortURL].longURL = newLongURL;
@@ -160,9 +160,9 @@ app.post("/urls/:id/edit", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.url.split("/")[2];
-  if (!shortUrlExists(shortURL)) return res.send("URL Does Not Exist");
+  if (!shortUrlExists(shortURL, urlDatabase)) return res.send("URL Does Not Exist");
   if (userID === undefined) return res.send("Login To Delete URL");
-  const userURLs = urlsForUser(userID);
+  const userURLs = urlsForUser(userID, urlDatabase);
   if (userURLs[shortURL].userID === userID) {
     delete urlDatabase[shortURL];
     res.redirect("/urls");
@@ -174,7 +174,7 @@ app.post("/urls/:id/delete", (req, res) => {
 app.get("/u/:id", (req, res) => {
   const shortURL = req.url.split("/")[2];
   const longURL = urlDatabase[shortURL].longURL;
-  if (!shortUrlExists(shortURL)) return res.send("Url Does Not Exist");
+  if (!shortUrlExists(shortURL, urlDatabase)) return res.send("Url Does Not Exist");
   res.redirect(longURL);
 });
 
@@ -182,7 +182,7 @@ app.get("/register", (req, res) => {
   const userID = req.session.userID;
   const templateVars = {
     urls: urlDatabase,
-    users,
+    usersDatabase,
     userID,
   };
   if (userID !== undefined) {
@@ -199,8 +199,8 @@ app.post("/register", (req, res) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
   if (email === "") return res.send("Empty Field Input Email: 404");
   if (password === "") return res.send("Empty Field Input Password: 404");
-  if (getUserByEmail(email, users)) return res.send("User Already Exists: 404");
-  users[id] = {
+  if (getUserByEmail(email, usersDatabase)) return res.send("User Already Exists: 404");
+  usersDatabase[id] = {
     id: id,
     email: email,
     password: hashedPassword,
@@ -213,7 +213,7 @@ app.get("/login", (req, res) => {
   const userID = req.session.userID;
   const templateVars = {
     urls: urlDatabase,
-    users,
+    usersDatabase,
     userID,
   };
   if (userID !== undefined) {
@@ -226,7 +226,7 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const user = getUserByEmail(email, users);
+  const user = getUserByEmail(email, usersDatabase);
   if (user === null) return res.send("Email Not Found: 403");
   if (bcrypt.compareSync(password, user.password)) {
     req.session.userID = user.id;
@@ -245,26 +245,3 @@ app.post("/logout", (req, res) => {
 ///////////////////////////////////////////////////////////////////
 // Functions
 ///////////////////////////////////////////////////////////////////
-
-const generateRandomString = function() {
-  return Math.random().toString(36).slice(2, 8);
-};
-
-const shortUrlExists = function(shortUrl) {
-  for (const key in urlDatabase) {
-    if (key === shortUrl) {
-      return true;
-    }
-  }
-  return false;
-};
-
-const urlsForUser = function(id) {
-  let userURLs = {};
-  for (const shortURL in urlDatabase) {
-    if (urlDatabase[shortURL].userID === id) {
-      userURLs[shortURL] = urlDatabase[shortURL];
-    }
-  }
-  return userURLs;
-};
