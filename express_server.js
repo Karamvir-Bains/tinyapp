@@ -12,14 +12,17 @@ const urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
     userID: "aJ48lW",
+    views: 0,
   },
   "9sm5xK": {
     longURL: "http://www.google.com",
     userID: "aJ48lW",
+    views: 0,
   },
   "ojx23l": {
     longURL: "https://www.youtube.com/",
     userID: "abc123",
+    views: 0,
   },
 };
 
@@ -126,12 +129,15 @@ app.get("/urls/:id", (req, res) => {
   if (userID === undefined) return res.send("Login To View Url");
   const longURL = urlDatabase[shortURL].longURL;
   const userURLs = urlsForUser(userID, urlDatabase);
+  urlDatabase[shortURL].views += 1;
+  const viewCount = urlDatabase[shortURL].views;
   if (userURLs[shortURL]) {
     const templateVars = {
       id: shortURL,
       longURL: longURL,
       usersDatabase,
       userID,
+      viewCount,
     };
     res.render("urls_show", templateVars);
   } else {
