@@ -1,6 +1,7 @@
 const express = require("express");
 const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
+const { getUserByEmail } = require("./helpers");
 
 ///////////////////////////////////////////////////////////////////
 // Data
@@ -198,7 +199,7 @@ app.post("/register", (req, res) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
   if (email === "") return res.send("Empty Field Input Email: 404");
   if (password === "") return res.send("Empty Field Input Password: 404");
-  if (userLookUp(email)) return res.send("User Already Exists: 404");
+  if (getUserByEmail(email, users)) return res.send("User Already Exists: 404");
   users[id] = {
     id: id,
     email: email,
@@ -225,7 +226,7 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const user = userLookUp(email);
+  const user = getUserByEmail(email, users);
   if (user === null) return res.send("Email Not Found: 403");
   if (bcrypt.compareSync(password, user.password)) {
     req.session.userID = user.id;
@@ -247,16 +248,6 @@ app.post("/logout", (req, res) => {
 
 const generateRandomString = function() {
   return Math.random().toString(36).slice(2, 8);
-};
-
-const userLookUp = function(email) {
-  const userArray = Object.values(users);
-  for (const user of userArray) {
-    if (user["email"] === email) {
-      return user;
-    }
-  }
-  return null;
 };
 
 const shortUrlExists = function(shortUrl) {
