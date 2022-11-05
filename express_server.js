@@ -14,18 +14,21 @@ const urlDatabase = {
     userID: "aJ48lW",
     views: 0,
     uniqueViews: 0,
+    viistHistory: [],
   },
   "9sm5xK": {
     longURL: "http://www.google.com",
     userID: "aJ48lW",
     views: 0,
     uniqueViews: 0,
+    viistHistory: [],
   },
   "ojx23l": {
     longURL: "https://www.youtube.com/",
     userID: "abc123",
     views: 0,
     uniqueViews: 0,
+    visitHistory: [],
   },
 };
 
@@ -135,6 +138,9 @@ app.get("/urls/:id", (req, res) => {
   const longURL = urlDatabase[shortURL].longURL;
   const userURLs = urlsForUser(userID, urlDatabase);
   urlDatabase[shortURL].views += 1;
+  const timestamp = new Date();
+  const visitHistory = urlDatabase[shortURL].visitHistory;
+  visitHistory.push({userID: userID, timestamp: timestamp});
   const viewCount = urlDatabase[shortURL].views;
   if (isUniqueViewer(shortURL, userID, usersDatabase)) {
     urlDatabase[shortURL].uniqueViews += 1;
@@ -149,6 +155,7 @@ app.get("/urls/:id", (req, res) => {
       userID,
       viewCount,
       uniqueViewCount,
+      visitHistory,
     };
     res.render("urls_show", templateVars);
   } else {
@@ -266,8 +273,8 @@ app.post("/logout", (req, res) => {
 ///////////////////////////////////////////////////////////////////
 
 const isUniqueViewer = function(shortURL, userID, database) {
-  for (const vist of database[userID].history) {
-    if (shortURL === vist) {
+  for (const visit of database[userID].history) {
+    if (shortURL === visit) {
       return false;
     }
   }

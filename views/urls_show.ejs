@@ -40,6 +40,15 @@
           </div>
         </form>
       </div>
+      <div>
+        <h3 class="mt-2">Viewer History</h3>
+        <% for (const visit of visitHistory) {%>
+          <div>
+            <p><%= visit.userID %></p>
+            <p><%= visit.timestamp %></p>
+          </div> 
+        <% } %> 
+      </div>
       <div class="card-footer text-muted"></div>
     </div>
     <!-- Bootstrap JS -->
