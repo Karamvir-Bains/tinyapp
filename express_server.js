@@ -12,6 +12,7 @@ const urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
     userID: "aJ48lW",
+    dateCreated: "Wed Jun 09 2021",
     views: 0,
     uniqueViews: 0,
     visitHistory: [],
@@ -19,6 +20,7 @@ const urlDatabase = {
   "9sm5xK": {
     longURL: "http://www.google.com",
     userID: "aJ48lW",
+    dateCreated: "Mon Sep 19 2022",
     views: 0,
     uniqueViews: 0,
     visitHistory: [],
@@ -26,6 +28,7 @@ const urlDatabase = {
   "ojx23l": {
     longURL: "https://www.youtube.com/",
     userID: "abc123",
+    dateCreated: "Sun Mar 19 1995",
     views: 0,
     uniqueViews: 0,
     visitHistory: [],
@@ -111,9 +114,15 @@ app.post("/urls", (req, res) => {
   } else {
     const longURL = req.body.longURL;
     const shortURL = generateRandomString();
+    const dateCreated = new Date().toDateString();
+    console.log(dateCreated);
     urlDatabase[shortURL] = {
       longURL: longURL,
       userID: userID,
+      dateCreated: dateCreated,
+      views: 0,
+      uniqueViews: 0,
+      visitHistory: [],
     };
     res.redirect(`/urls/${shortURL}`);
   }
@@ -150,6 +159,7 @@ app.get("/urls/:id", (req, res) => {
   }
   const uniqueViewCount = urlDatabase[shortURL].uniqueViews;
   const canEdit = userURLs[shortURL] ? true : false;
+  const dateCreated = urlDatabase[shortURL].dateCreated;
   const templateVars = {
     id: shortURL,
     longURL: longURL,
@@ -159,6 +169,7 @@ app.get("/urls/:id", (req, res) => {
     uniqueViewCount,
     visitHistory,
     canEdit,
+    dateCreated,
   };
   res.render("urls_show", templateVars);
 });
