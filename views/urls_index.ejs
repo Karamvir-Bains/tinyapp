@@ -25,22 +25,26 @@
           <tr>
             <th scope="col">Short URL ID</th>
             <th scope="col">Long URL</th>
+            <th scope="col">Total Views</th>
+            <th scope="col">Unique Views</th>
+            <th scope="col">Date Created</th>
             <th scope="col">Edit</th>
             <th scope="col">Delete</th>
           </tr>
         </thead>
         <tbody>
-          <% for (let id in urls) { %>
+          <% for (let shortURL in urlDatabase) { %>
             <tr>
-              <td><%= id %></td>
-              <td><%= urls[id].longURL %></td>
+              <td><%= shortURL %></td>
+              <td><%= urlDatabase[shortURL].longURL %></td>
+              <td><%= urlDatabase[shortURL].views %></td>
+              <td><%= urlDatabase[shortURL].uniqueViews %></td>
+              <td><%= urlDatabase[shortURL].dateCreated %></td>
               <td>
-                <form method="GET" action=<%= `/urls/${id}` %>>
-                  <button class="btn btn-outline-primary">Edit</button>
-                </form>
+                <a class="btn btn-outline-primary" href=<%= `/urls/${shortURL}` %>>Edit</a>
               </td>
               <td>
-                <form method="POST" action=<%= `/urls/${id}/delete?_method=DELETE` %>>
+                <form method="POST" action=<%= `/urls/${shortURL}/delete?_method=DELETE` %>>
                   <button class="btn btn-outline-danger">Delete</button>
                 </form>
               </td>
@@ -48,6 +52,7 @@
           <% } %>
         </tbody>
       </table>
+      <a class="btn btn-primary" href="/urls/new">Create a New Short Link</a>
     </main>
     <!-- Bootstrap JS -->
     <script

@@ -97,7 +97,7 @@ app.get("/urls", (req, res) => {
     res.send("Login To View Urls");
   } else {
     const templateVars = {
-      urls: urlDatabase,
+      urlDatabase,
       usersDatabase,
       userID,
     };
@@ -115,7 +115,6 @@ app.post("/urls", (req, res) => {
     const longURL = req.body.longURL;
     const shortURL = generateRandomString();
     const dateCreated = new Date().toDateString();
-    console.log(dateCreated);
     urlDatabase[shortURL] = {
       longURL: longURL,
       userID: userID,
