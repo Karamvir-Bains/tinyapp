@@ -51,6 +51,7 @@ app.set("view engine", "ejs");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieSession({name: 'session', keys: ["u3M1tAyFG2", "2J225oPIny"]}));
+app.use(methodOverride('_method'));
 
 ///////////////////////////////////////////////////////////////////
 // Listener
@@ -138,7 +139,7 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
-app.post("/urls/:id/update", (req, res) => {
+app.put("/urls/:id/update", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.url.split("/")[2];
   if (!shortUrlExists(shortURL, urlDatabase)) return res.send("URL Does Not Exist");
@@ -158,7 +159,7 @@ app.post("/urls/:id/edit", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-app.post("/urls/:id/delete", (req, res) => {
+app.delete("/urls/:id/delete", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.url.split("/")[2];
   if (!shortUrlExists(shortURL, urlDatabase)) return res.send("URL Does Not Exist");
