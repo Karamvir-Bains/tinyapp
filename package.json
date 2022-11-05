@@ -5,7 +5,7 @@
   "main": "express_server.js",
   "scripts": {
     "start": "./node_modules/.bin/nodemon -L express_server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,8 @@
     "express": "^4.18.2"
   },
   "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.1.0",
     "nodemon": "^2.0.20"
   }
 }
