@@ -34,10 +34,11 @@ TinyApp is a full stack web application built with Node and Express that allows 
 - Run the development web server using the `node express_server.js` command.
 
 ## Documentation
+### ./
 - `express_server.js`: It's the server file and it handles all routes.
 - `helpers.js`: Is a set of helper functions.
 
-### /views
+### ./views
 - `urls_error.ejs`: Displays an HTML error message.
 - `urls_index.ejs`: Displays all user owned tiny urls.
 - `urls_login.ejs`: Displays login page.
@@ -46,11 +47,11 @@ TinyApp is a full stack web application built with Node and Express that allows 
 - `urls_register.ejs`: Displays register page.
 - `urls_show.ejs`: Displays a view page for a tiny url. Also it displays a edit feature if the owner is viewing the page.
 
-### /views/partials
+### ./views/partials
 - `_header.ejs`: The header bar at the top of each page.
 
-### /test
+### ./test
 - `helpersTest.js`: Mocha and Chai automated testing for helper functions.
 
-### /docs
+### ./docs
 - Images for the README.md file.
