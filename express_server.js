@@ -210,7 +210,6 @@ app.delete("/urls/:id/delete", (req, res) => {
   if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", usersDatabase);
   if (userID === undefined) return sendError(res, userID, 401, "Login To Delete URL", "Login", "/login", usersDatabase);
   const userURLs = urlsForUser(userID, urlDatabase);
-  console.log(userURLs[shortURL]);
   if (userURLs[shortURL] === undefined) return sendError(res, userID, 403, "Can't Delete URLs You Don't Own", usersDatabase);
   delete urlDatabase[shortURL];
   res.redirect("/urls");
