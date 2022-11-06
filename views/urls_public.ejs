@@ -28,6 +28,7 @@
             <th scope="col">Total Views</th>
             <th scope="col">Unique Views</th>
             <th scope="col">Date Created</th>
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
@@ -38,6 +39,9 @@
               <td><%= urlDatabase[shortURL].views %></td>
               <td><%= urlDatabase[shortURL].uniqueViews %></td>
               <td><%= urlDatabase[shortURL].dateCreated %></td>
+              <td>
+                <a class="btn btn-primary" href=<%= `/urls/${shortURL}` %>>View</a>
+              </td>
             </tr>
           <% } %>
         </tbody>
