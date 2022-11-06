@@ -8,47 +8,9 @@ const { getUserByEmail, generateRandomString, shortUrlExists, urlsForUser, isUni
 // Data
 ///////////////////////////////////////////////////////////////////
 
-const urlDatabase = {
-  "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: "aJ48lW",
-    dateCreated: "Wed Jun 09 2021",
-    views: 0,
-    uniqueViews: 0,
-    visitHistory: [],
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userID: "aJ48lW",
-    dateCreated: "Mon Sep 19 2022",
-    views: 0,
-    uniqueViews: 0,
-    visitHistory: [],
-  },
-  "ojx23l": {
-    longURL: "https://www.youtube.com/",
-    userID: "abc123",
-    dateCreated: "Sun Mar 19 1995",
-    views: 0,
-    uniqueViews: 0,
-    visitHistory: [],
-  },
-};
+const urlDatabase = {};
 
-const usersDatabase = {
-  "abc123": {
-    id: "abc123",
-    email: "example@gmail.com",
-    password: "$2a$10$88eZVuGIamCusxt1qDjVzuv6aNDAeAIU1rzc/kEpKIP0HBJ.h1cwa",
-    history: [],
-  },
-  "aJ48lW": {
-    id: "aJ48lW",
-    email: "example1@gmail.com",
-    password: "$2a$10$Z6EFryOHMMtUwhq6GYyinOtWWooA1BlQQVD8J74hSO1KsTX9v9Pli",
-    history: [],
-  },
-};
+const usersDatabase = {};
 
 ///////////////////////////////////////////////////////////////////
 // Set-Up / Configuration
