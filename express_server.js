@@ -122,9 +122,9 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.params.id;
-  const longURL = urlDatabase[shortURL].longURL;
-  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", usersDatabase);
+  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", "My URLs", "/urls", usersDatabase);
   if (userID === undefined) return sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login", usersDatabase);
+  const longURL = urlDatabase[shortURL].longURL;
   // Checks if the user is the owner, to enable edit features
   const userURLs = urlsForUser(userID, urlDatabase);
   const canEdit = userURLs[shortURL] ? true : false;
@@ -185,8 +185,8 @@ app.delete("/urls/:id/delete", (req, res) => {
 app.get("/u/:id", (req, res) => {
   const userID = undefined;
   const shortURL = req.params.id;
+  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", "My URLs", "/urls", usersDatabase);
   const longURL = urlDatabase[shortURL].longURL;
-  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", usersDatabase);
   res.redirect(longURL);
 });
 
@@ -221,6 +221,7 @@ app.post("/register", (req, res) => {
     id: id,
     email: email,
     password: hashedPassword,
+    history: [],
   };
   req.session.userID = id;
   res.redirect("/urls");
