@@ -2,7 +2,7 @@ const express = require("express");
 const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 const methodOverride = require('method-override');
-const { getUserByEmail, generateRandomString, shortUrlExists, urlsForUser } = require("./helpers");
+const { getUserByEmail, generateRandomString, shortUrlExists, urlsForUser, isUniqueViewer, sendError } = require("./helpers");
 
 ///////////////////////////////////////////////////////////////////
 // Data
@@ -91,7 +91,7 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   const userID = req.session.userID;
   if (userID === undefined) {
-    sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login");
+    sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login", usersDatabase);
   } else {
     const templateVars = {
       urlDatabase,
@@ -107,7 +107,7 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req, res) => {
   const userID = req.session.userID;
   if (userID === undefined) {
-    sendError(res, userID, 401, "Must Be Logged In To Create Short URLs", "Login", "/login");
+    sendError(res, userID, 401, "Must Be Logged In To Create Short URLs", "Login", "/login", usersDatabase);
   } else {
     const longURL = req.body.longURL;
     const shortURL = generateRandomString();
@@ -140,8 +140,8 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.params.id;
-  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist");
-  if (userID === undefined) return sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login");
+  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", usersDatabase);
+  if (userID === undefined) return sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login", usersDatabase);
   const longURL = urlDatabase[shortURL].longURL;
   const userURLs = urlsForUser(userID, urlDatabase);
   urlDatabase[shortURL].views += 1;
@@ -175,10 +175,10 @@ app.get("/urls/:id", (req, res) => {
 app.put("/urls/:id", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.params.id;
-  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist");
-  if (userID === undefined) return sendError(res, userID, 401, "Login To Update URL", "Login", "/login");
+  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", usersDatabase);
+  if (userID === undefined) return sendError(res, userID, 401, "Login To Update URL", "Login", "/login", usersDatabase);
   const userURLs = urlsForUser(userID, urlDatabase);
-  if (userURLs[shortURL] === undefined) return sendError(res, userID, 403, "Can't Edit URLs You Don't Own");
+  if (userURLs[shortURL] === undefined) return sendError(res, userID, 403, "Can't Edit URLs You Don't Own", usersDatabase);
   const newLongURL = req.body.longURL;
   urlDatabase[shortURL].longURL = newLongURL;
   res.redirect(`/urls`);
@@ -189,11 +189,11 @@ app.put("/urls/:id", (req, res) => {
 app.delete("/urls/:id/delete", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.params.id;
-  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist");
-  if (userID === undefined) return sendError(res, userID, 401, "Login To Delete URL", "Login", "/login");
+  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", usersDatabase);
+  if (userID === undefined) return sendError(res, userID, 401, "Login To Delete URL", "Login", "/login", usersDatabase);
   const userURLs = urlsForUser(userID, urlDatabase);
   console.log(userURLs[shortURL]);
-  if (userURLs[shortURL] === undefined) return sendError(res, userID, 403, "Can't Delete URLs You Don't Own");
+  if (userURLs[shortURL] === undefined) return sendError(res, userID, 403, "Can't Delete URLs You Don't Own", usersDatabase);
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
@@ -202,7 +202,7 @@ app.get("/u/:id", (req, res) => {
   const userID = undefined;
   const shortURL = req.params.id;
   const longURL = urlDatabase[shortURL].longURL;
-  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist");
+  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", usersDatabase);
   res.redirect(longURL);
 });
 
@@ -226,9 +226,9 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
-  if (email === "") return sendError(res, userID, 401, "Email Can't Be Empty", "Try Again", "/login");
-  if (password === "") return sendError(res, userID, 401, "Password Can't Be Empty", "Try Again", "/login");
-  if (getUserByEmail(email, usersDatabase)) return sendError(res, userID, 403, "User Already Exists", "Login", "/login");
+  if (email === "") return sendError(res, userID, 401, "Email Can't Be Empty", "Try Again", "/login", usersDatabase);
+  if (password === "") return sendError(res, userID, 401, "Password Can't Be Empty", "Try Again", "/login", usersDatabase);
+  if (getUserByEmail(email, usersDatabase)) return sendError(res, userID, 403, "User Already Exists", "Login", "/login", usersDatabase);
   usersDatabase[id] = {
     id: id,
     email: email,
@@ -257,12 +257,12 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const user = getUserByEmail(email, usersDatabase);
-  if (user === null) return sendError(res, userID, 403, "Email Not Found", "Try Again", "/login");
+  if (user === null) return sendError(res, userID, 403, "Email Not Found", "Try Again", "/login", usersDatabase);
   if (bcrypt.compareSync(password, user.password)) {
     req.session.userID = user.id;
     res.redirect("/urls");
   } else {
-    sendError(res, userID, 401, "Wrong Password", "Try Again", "/login");
+    sendError(res, userID, 401, "Wrong Password", "Try Again", "/login", usersDatabase);
   }
 });
 
@@ -271,27 +271,3 @@ app.post("/logout", (req, res) => {
   res.clearCookie('session.sig');
   res.redirect("/login");
 });
-
-///////////////////////////////////////////////////////////////////
-// Functions
-///////////////////////////////////////////////////////////////////
-
-const isUniqueViewer = function(shortURL, userID, database) {
-  for (const visit of database[userID].history) {
-    if (shortURL === visit) {
-      return false;
-    }
-  }
-  return true;
-};
-
-const sendError = function(res, userID, errorCode, errorMessage, redirectName, redirect) {
-  const errorResponse = {
-    usersDatabase,
-    userID,
-    errorMessage: errorMessage,
-    redirectName: redirectName,
-    redirect: redirect,
-  };
-  res.status(errorCode).render("urls_error", errorResponse);
-};

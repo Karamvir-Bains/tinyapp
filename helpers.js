@@ -30,9 +30,31 @@ const urlsForUser = function(userID, database) {
   return userURLs;
 };
 
+const isUniqueViewer = function(shortURL, userID, database) {
+  for (const visit of database[userID].history) {
+    if (shortURL === visit) {
+      return false;
+    }
+  }
+  return true;
+};
+
+const sendError = function(res, userID, errorCode, errorMessage, redirectName, redirect, database) {
+  const errorResponse = {
+    usersDatabase: database,
+    userID,
+    errorMessage: errorMessage,
+    redirectName: redirectName,
+    redirect: redirect,
+  };
+  res.status(errorCode).render("urls_error", errorResponse);
+};
+
 module.exports = {
   getUserByEmail,
   generateRandomString,
   shortUrlExists,
-  urlsForUser
+  urlsForUser,
+  isUniqueViewer,
+  sendError,
 };
