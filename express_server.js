@@ -79,6 +79,7 @@ app.listen(PORT, () => {
 // Routes
 ///////////////////////////////////////////////////////////////////
 
+// Redirects to /urls if logged in, else to /login
 app.get("/", (req, res) => {
   const userID = req.session.userID;
   if (userID === undefined) {
@@ -88,6 +89,7 @@ app.get("/", (req, res) => {
   }
 });
 
+// Displays the urls the user owns
 app.get("/urls", (req, res) => {
   const userID = req.session.userID;
   if (userID === undefined) {
@@ -102,7 +104,6 @@ app.get("/urls", (req, res) => {
   }
 });
 
-// POST Method
 // Adds new shortURL object to url database
 app.post("/urls", (req, res) => {
   const userID = req.session.userID;
@@ -124,6 +125,7 @@ app.post("/urls", (req, res) => {
   }
 });
 
+// Displays create new url form
 app.get("/urls/new", (req, res) => {
   const userID = req.session.userID;
   const templateVars = {
@@ -137,6 +139,8 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+// Displays the shortURL information
+// Also if owner display edit controls
 app.get("/urls/:id", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.params.id;
@@ -170,7 +174,6 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-// PUT Method
 // Updates longURL if user is owner
 app.put("/urls/:id", (req, res) => {
   const userID = req.session.userID;
@@ -184,7 +187,6 @@ app.put("/urls/:id", (req, res) => {
   res.redirect(`/urls`);
 });
 
-// Delete Method
 // Deletes shortURL from url database if user is owner
 app.delete("/urls/:id/delete", (req, res) => {
   const userID = req.session.userID;
@@ -198,6 +200,7 @@ app.delete("/urls/:id/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+// Redirects user to longURL
 app.get("/u/:id", (req, res) => {
   const userID = undefined;
   const shortURL = req.params.id;
@@ -206,6 +209,8 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 });
 
+// Registration form
+// If user is already logged in redirects to /urls
 app.get("/register", (req, res) => {
   const userID = req.session.userID;
   const templateVars = {
@@ -220,6 +225,8 @@ app.get("/register", (req, res) => {
   }
 });
 
+// Creates new user
+// If the form information is filled out correctly
 app.post("/register", (req, res) => {
   const userID = undefined;
   const id = generateRandomString();
@@ -238,6 +245,8 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
+// Login Form
+// If already logged in redirects to /urls
 app.get("/login", (req, res) => {
   const userID = req.session.userID;
   const templateVars = {
@@ -252,6 +261,7 @@ app.get("/login", (req, res) => {
   }
 });
 
+// Checks if information is valid and logs in user
 app.post("/login", (req, res) => {
   const userID = undefined;
   const email = req.body.email;
@@ -266,6 +276,7 @@ app.post("/login", (req, res) => {
   }
 });
 
+// Clears users cookies and logs out user
 app.post("/logout", (req, res) => {
   res.clearCookie('session');
   res.clearCookie('session.sig');
