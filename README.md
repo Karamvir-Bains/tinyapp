@@ -4,16 +4,20 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ## Final Product
 
-- My URLs Page
+### My URLs Page
+
 !["Screenshot of URLs page"](https://github.com/Karamvir-Bains/tinyapp/blob/main/docs/urls-page.png)
 
-- My Public URLs Page
+### Public URLs Page
+
 !["Screenshot of URLs Public page"](https://github.com/Karamvir-Bains/tinyapp/blob/main/docs/urls-public-page.png)
 
-- My Public View Page
+### Public View Page
+
 !["Screenshot of URLs Public View page"](https://github.com/Karamvir-Bains/tinyapp/blob/main/docs/urls-view-page.png)
 
-- My Edit View Page
+### Edit View Page
+
 !["Screenshot of URLs Edit View page"](https://github.com/Karamvir-Bains/tinyapp/blob/main/docs/urls-edit-page.png)
 
 ## Dependencies
