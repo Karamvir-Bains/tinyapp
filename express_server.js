@@ -160,21 +160,25 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.params.id;
+  const longURL = urlDatabase[shortURL].longURL;
   if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", usersDatabase);
   if (userID === undefined) return sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login", usersDatabase);
-  const longURL = urlDatabase[shortURL].longURL;
+  // Checks if the user is the owner, to enable edit features
   const userURLs = urlsForUser(userID, urlDatabase);
-  urlDatabase[shortURL].views += 1;
-  const timestamp = new Date();
+  const canEdit = userURLs[shortURL] ? true : false;
+  // Creates a log of recent view
   const visitHistory = urlDatabase[shortURL].visitHistory;
+  const timestamp = new Date();
   visitHistory.push({userID: userID, timestamp: timestamp});
+  // Updates Total View Count
+  urlDatabase[shortURL].views += 1;
   const viewCount = urlDatabase[shortURL].views;
+  // Updates Only Unique Viewer Count
   if (isUniqueViewer(shortURL, userID, usersDatabase)) {
     urlDatabase[shortURL].uniqueViews += 1;
     usersDatabase[userID].history.push(shortURL);
   }
   const uniqueViewCount = urlDatabase[shortURL].uniqueViews;
-  const canEdit = userURLs[shortURL] ? true : false;
   const dateCreated = urlDatabase[shortURL].dateCreated;
   const templateVars = {
     id: shortURL,
