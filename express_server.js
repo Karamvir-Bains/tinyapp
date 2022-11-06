@@ -95,8 +95,9 @@ app.get("/urls", (req, res) => {
   if (userID === undefined) {
     sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login", usersDatabase);
   } else {
+    const userURLs = urlsForUser(userID, urlDatabase);
     const templateVars = {
-      urlDatabase,
+      urlDatabase: userURLs,
       usersDatabase,
       userID,
     };
@@ -122,6 +123,21 @@ app.post("/urls", (req, res) => {
       visitHistory: [],
     };
     res.redirect(`/urls/${shortURL}`);
+  }
+});
+
+// Displays the all urls in the database
+app.get("/urls/public", (req, res) => {
+  const userID = req.session.userID;
+  if (userID === undefined) {
+    sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login", usersDatabase);
+  } else {
+    const templateVars = {
+      urlDatabase,
+      usersDatabase,
+      userID,
+    };
+    res.render("urls_public", templateVars);
   }
 });
 
