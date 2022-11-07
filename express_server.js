@@ -3,14 +3,7 @@ const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 const methodOverride = require('method-override');
 const { getUserByEmail, generateRandomString, shortUrlExists, urlsForUser, isUniqueViewer, sendError } = require("./helpers");
-
-///////////////////////////////////////////////////////////////////
-// Data
-///////////////////////////////////////////////////////////////////
-
-const urlDatabase = {};
-
-const usersDatabase = {};
+const { urlDatabase, usersDatabase } = require("./database.js");
 
 ///////////////////////////////////////////////////////////////////
 // Set-Up / Configuration
