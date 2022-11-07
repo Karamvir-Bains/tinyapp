@@ -249,7 +249,8 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const user = getUserByEmail(email, usersDatabase);
-  if (user === null) return sendError(res, userID, 403, "Email Not Found", "Try Again", "/login", usersDatabase);
+  if (!email) return sendError(res, userID, 401, "Email Can't Be Empty", "Try Again", "/login", usersDatabase);
+  if (!user) return sendError(res, userID, 404, "Email Not Found, Try Registering", "Register", "/register", usersDatabase);
   if (bcrypt.compareSync(password, user.password)) {
     req.session.userID = user.id;
     res.redirect("/urls");
