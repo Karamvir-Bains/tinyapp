@@ -124,34 +124,21 @@ app.get("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", "My URLs", "/urls", usersDatabase);
   if (!userID) return sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login", usersDatabase);
-  const longURL = urlDatabase[shortURL].longURL;
+  const shortURLObj = urlDatabase[shortURL];
+  const longURL = shortURLObj.longURL;
   // Checks if the user is the owner, to enable edit features
   const userURLs = urlsForUser(userID, urlDatabase);
   const canEdit = userURLs[shortURL] ? true : false;
-  // Creates a log of recent view
-  const visitHistory = urlDatabase[shortURL].visitHistory;
-  const timestamp = new Date();
-  visitHistory.push({userID: userID, timestamp: timestamp});
-  // Updates Total View Count
-  urlDatabase[shortURL].views += 1;
-  const viewCount = urlDatabase[shortURL].views;
-  // Updates Only Unique Viewer Count
-  if (isUniqueViewer(shortURL, userID, usersDatabase)) {
-    urlDatabase[shortURL].uniqueViews += 1;
-    usersDatabase[userID].history.push(shortURL);
-  }
-  const uniqueViewCount = urlDatabase[shortURL].uniqueViews;
-  const dateCreated = urlDatabase[shortURL].dateCreated;
   const templateVars = {
     id: shortURL,
     longURL: longURL,
     usersDatabase,
     userID,
-    viewCount,
-    uniqueViewCount,
-    visitHistory,
+    viewCount: shortURLObj.views,
+    uniqueViewCount: shortURLObj.uniqueViews,
+    visitHistory: shortURLObj.visitHistory,
     canEdit,
-    dateCreated,
+    dateCreated: shortURLObj.dateCreated,
   };
   res.render("urls_show", templateVars);
 });
@@ -183,10 +170,24 @@ app.delete("/urls/:id/delete", (req, res) => {
 
 // Redirects user to longURL
 app.get("/u/:id", (req, res) => {
-  const userID = undefined;
+  const userID = req.session.userID;
   const shortURL = req.params.id;
   if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", "My URLs", "/urls", usersDatabase);
   const longURL = urlDatabase[shortURL].longURL;
+  // Creates a log of when a shortURL is used
+  const timestamp = new Date();
+  const log = {
+    userID: userID,
+    timestamp: timestamp
+  };
+  urlDatabase[shortURL].visitHistory.push(log);
+  // Updates Total View Count
+  urlDatabase[shortURL].views += 1;
+  // Updates Only Unique Viewer Count
+  if (isUniqueViewer(shortURL, userID, usersDatabase)) {
+    urlDatabase[shortURL].uniqueViews += 1;
+    usersDatabase[userID].history.push(shortURL);
+  }
   res.redirect(longURL);
 });
 
