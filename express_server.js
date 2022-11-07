@@ -44,7 +44,7 @@ app.listen(PORT, () => {
 // Redirects to /urls if logged in, else to /login
 app.get("/", (req, res) => {
   const userID = req.session.userID;
-  if (userID === undefined) {
+  if (!userID) {
     res.redirect("/login");
   } else {
     res.redirect("/urls");
@@ -54,7 +54,7 @@ app.get("/", (req, res) => {
 // Displays the urls the user owns
 app.get("/urls", (req, res) => {
   const userID = req.session.userID;
-  if (userID === undefined) {
+  if (!userID) {
     sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login", usersDatabase);
   } else {
     const userURLs = urlsForUser(userID, urlDatabase);
@@ -70,7 +70,7 @@ app.get("/urls", (req, res) => {
 // Adds new shortURL object to url database
 app.post("/urls", (req, res) => {
   const userID = req.session.userID;
-  if (userID === undefined) {
+  if (!userID) {
     sendError(res, userID, 401, "Must Be Logged In To Create Short URLs", "Login", "/login", usersDatabase);
   } else {
     const longURL = req.body.longURL;
@@ -91,7 +91,7 @@ app.post("/urls", (req, res) => {
 // Displays the all urls in the database
 app.get("/urls/public", (req, res) => {
   const userID = req.session.userID;
-  if (userID === undefined) {
+  if (!userID) {
     sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login", usersDatabase);
   } else {
     const templateVars = {
@@ -110,7 +110,7 @@ app.get("/urls/new", (req, res) => {
     usersDatabase,
     userID,
   };
-  if (userID === undefined) {
+  if (!userID) {
     res.redirect("/login");
   } else {
     res.render("urls_new", templateVars);
@@ -123,7 +123,7 @@ app.get("/urls/:id", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.params.id;
   if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", "My URLs", "/urls", usersDatabase);
-  if (userID === undefined) return sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login", usersDatabase);
+  if (!userID) return sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login", usersDatabase);
   const longURL = urlDatabase[shortURL].longURL;
   // Checks if the user is the owner, to enable edit features
   const userURLs = urlsForUser(userID, urlDatabase);
@@ -161,9 +161,9 @@ app.put("/urls/:id", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.params.id;
   if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", usersDatabase);
-  if (userID === undefined) return sendError(res, userID, 401, "Login To Update URL", "Login", "/login", usersDatabase);
+  if (!userID) return sendError(res, userID, 401, "Login To Update URL", "Login", "/login", usersDatabase);
   const userURLs = urlsForUser(userID, urlDatabase);
-  if (userURLs[shortURL] === undefined) return sendError(res, userID, 403, "Can't Edit URLs You Don't Own", usersDatabase);
+  if (!userURLs[shortURL]) return sendError(res, userID, 403, "Can't Edit URLs You Don't Own", usersDatabase);
   const newLongURL = req.body.longURL;
   urlDatabase[shortURL].longURL = newLongURL;
   res.redirect(`/urls`);
@@ -174,9 +174,9 @@ app.delete("/urls/:id/delete", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.params.id;
   if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", usersDatabase);
-  if (userID === undefined) return sendError(res, userID, 401, "Login To Delete URL", "Login", "/login", usersDatabase);
+  if (!userID) return sendError(res, userID, 401, "Login To Delete URL", "Login", "/login", usersDatabase);
   const userURLs = urlsForUser(userID, urlDatabase);
-  if (userURLs[shortURL] === undefined) return sendError(res, userID, 403, "Can't Delete URLs You Don't Own", usersDatabase);
+  if (!userURLs[shortURL]) return sendError(res, userID, 403, "Can't Delete URLs You Don't Own", usersDatabase);
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 });
@@ -214,8 +214,8 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
-  if (email === "") return sendError(res, userID, 401, "Email Can't Be Empty", "Try Again", "/login", usersDatabase);
-  if (password === "") return sendError(res, userID, 401, "Password Can't Be Empty", "Try Again", "/login", usersDatabase);
+  if (!email) return sendError(res, userID, 401, "Email Can't Be Empty", "Try Again", "/login", usersDatabase);
+  if (!password) return sendError(res, userID, 401, "Password Can't Be Empty", "Try Again", "/login", usersDatabase);
   if (getUserByEmail(email, usersDatabase)) return sendError(res, userID, 403, "User Already Exists", "Login", "/login", usersDatabase);
   usersDatabase[id] = {
     id: id,
