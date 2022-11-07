@@ -91,16 +91,12 @@ app.post("/urls", (req, res) => {
 // Displays the all urls in the database
 app.get("/urls/public", (req, res) => {
   const userID = req.session.userID;
-  if (!userID) {
-    sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login", usersDatabase);
-  } else {
-    const templateVars = {
-      urlDatabase,
-      usersDatabase,
-      userID,
-    };
-    res.render("urls_public", templateVars);
-  }
+  const templateVars = {
+    urlDatabase,
+    usersDatabase,
+    userID,
+  };
+  res.render("urls_public", templateVars);
 });
 
 // Displays create new url form
