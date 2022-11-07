@@ -215,8 +215,8 @@ app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
-  if (!email) return sendError(res, userID, 401, "Email Can't Be Empty", "Try Again", "/login", usersDatabase);
-  if (!password) return sendError(res, userID, 401, "Password Can't Be Empty", "Try Again", "/login", usersDatabase);
+  if (!email) return sendError(res, userID, 401, "Email Can't Be Empty", "Try Again", "/register", usersDatabase);
+  if (!password) return sendError(res, userID, 401, "Password Can't Be Empty", "Try Again", "/register", usersDatabase);
   if (getUserByEmail(email, usersDatabase)) return sendError(res, userID, 403, "User Already Exists", "Login", "/login", usersDatabase);
   usersDatabase[id] = {
     id: id,
