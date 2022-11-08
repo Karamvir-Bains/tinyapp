@@ -2,8 +2,15 @@ const express = require("express");
 const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 const methodOverride = require('method-override');
-const { getUserByEmail, generateRandomString, shortUrlExists, urlsForUser, isUniqueViewer, sendError } = require("./helpers");
 const { urlDatabase, usersDatabase } = require("./database.js");
+const {
+  getUserByEmail,
+  generateRandomString,
+  shortUrlExists,
+  urlsForUser,
+  isUniqueViewer,
+  sendError
+} = require("./helpers");
 
 ///////////////////////////////////////////////////////////////////
 // Set-Up / Configuration
