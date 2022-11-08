@@ -113,8 +113,7 @@ app.get("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
   if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", "My URLs", "/urls", usersDatabase);
   if (!userID) return sendError(res, userID, 401, "Must Be Logged In To View URLs", "Login", "/login", usersDatabase);
-  const shortURLObj = urlDatabase[shortURL];
-  const longURL = shortURLObj.longURL;
+  const longURL = urlDatabase[shortURL].longURL;
   // Checks if the user is the owner, to enable edit features
   const userURLs = urlsForUser(userID, urlDatabase);
   const canEdit = userURLs[shortURL] ? true : false;
@@ -123,11 +122,8 @@ app.get("/urls/:id", (req, res) => {
     longURL: longURL,
     usersDatabase,
     userID,
-    viewCount: shortURLObj.views,
-    uniqueViewCount: shortURLObj.uniqueViews,
-    visitHistory: shortURLObj.visitHistory,
+    URL: urlDatabase[shortURL],
     canEdit,
-    dateCreated: shortURLObj.dateCreated,
   };
   res.render("urls_show", templateVars);
 });

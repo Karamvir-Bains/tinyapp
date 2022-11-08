@@ -20,9 +20,9 @@
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
-        <p class="card-text">Total Views: <%= viewCount %></p>
-        <p class="card-text">Unique Views: <%= uniqueViewCount %></p>
-        <p class="card-text">Date Created: <%= dateCreated %></p>
+        <p class="card-text">Total Views: <%= URL.views %></p>
+        <p class="card-text">Unique Views: <%= URL.uniqueViews %></p>
+        <p class="card-text">Date Created: <%= URL.dateCreated %></p>
       </div>
       <% if (canEdit) {%> 
         <div class="card text-center bg-light">
@@ -42,7 +42,7 @@
         </div>
         <div>
           <h3 class="mt-2">Viewer History</h3>
-          <% for (const visit of visitHistory) {%>
+          <% for (const visit of URL.visitHistory) {%>
             <div>
               <p><%= visit.userID %></p>
               <p><%= visit.timestamp %></p>
