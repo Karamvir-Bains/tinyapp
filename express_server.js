@@ -132,7 +132,7 @@ app.get("/urls/:id", (req, res) => {
 app.put("/urls/:id", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.params.id;
-  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", usersDatabase);
+  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", "My URLs", "/urls", usersDatabase);
   if (!userID) return sendError(res, userID, 401, "Login To Update URL", "Login", "/login", usersDatabase);
   const userURLs = urlsForUser(userID, urlDatabase);
   if (!userURLs[shortURL]) return sendError(res, userID, 403, "Can't Edit URLs You Don't Own", usersDatabase);
@@ -145,7 +145,7 @@ app.put("/urls/:id", (req, res) => {
 app.delete("/urls/:id/delete", (req, res) => {
   const userID = req.session.userID;
   const shortURL = req.params.id;
-  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", usersDatabase);
+  if (!shortUrlExists(shortURL, urlDatabase)) return sendError(res, userID, 404, "URL Does Not Exist", "My URLs", "/urls", usersDatabase);
   if (!userID) return sendError(res, userID, 401, "Login To Delete URL", "Login", "/login", usersDatabase);
   const userURLs = urlsForUser(userID, urlDatabase);
   if (!userURLs[shortURL]) return sendError(res, userID, 403, "Can't Delete URLs You Don't Own", usersDatabase);
