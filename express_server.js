@@ -175,7 +175,7 @@ app.get("/u/:id", (req, res) => {
   urlDatabase[shortURL].visitHistory.push(log);
   // Updates Total View Count
   urlDatabase[shortURL].views += 1;
-  // Updates Only Unique Viewer Count
+  // Updates Unique Viewer Count, if user is logged in
   if (isUniqueViewer(shortURL, userID, usersDatabase)) {
     urlDatabase[shortURL].uniqueViews += 1;
     usersDatabase[userID].history.push(shortURL);

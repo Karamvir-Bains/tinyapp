@@ -31,6 +31,7 @@ const urlsForUser = function(userID, database) {
 };
 
 const isUniqueViewer = function(shortURL, userID, database) {
+  if (!userID) return false;
   for (const visit of database[userID].history) {
     if (shortURL === visit) {
       return false;
